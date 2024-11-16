@@ -21,6 +21,8 @@ export default [
       "vue/multiline-html-element-content-newline": "off",
       "vue/multi-word-component-names": "off",
       "vue/require-default-prop": "off",
+      "vue/html-self-closing": "off",
+      "vue/max-attributes-per-line": "off",
     },
   },
 ];
