@@ -13,8 +13,8 @@ app.use(express.json());
 // Routes
 const authRoutes = require("./routes/auth.routes");
 const itemsRoutes = require("./routes/items.routes");
-app.use("/api", authRoutes);
-app.use("/api", itemsRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/items", itemsRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World");

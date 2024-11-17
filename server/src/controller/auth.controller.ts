@@ -25,7 +25,7 @@ export const registerUser = async (
     await database.query(
       CHECK_USER,
       [username],
-      (err, results: UserAccount["username"]) => {
+      (err, results: UserAccount["username"][]) => {
         if (err) {
           console.error(err);
           return res.status(500).send({ message: "Error to check username" });
@@ -37,7 +37,7 @@ export const registerUser = async (
     await database.query(
       CHECK_EMAIL,
       [email],
-      (err, results: UserAccount["email"]) => {
+      (err, results: UserAccount["email"][]) => {
         if (err) {
           console.error(err);
           return res.status(500).send({ message: "Error to check email" });
@@ -82,6 +82,6 @@ export const registerUser = async (
         });
     }
   } catch (error) {
-    throw new Error(`Catched error : ${error}`);
+    throw new Error(`Catched error :${error}`);
   }
 };
