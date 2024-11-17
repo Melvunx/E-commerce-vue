@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import database from "../config/database";
-
+require("dotenv").config();
 const { GET_USER, GET_PROFILE } = process.env;
 
 export function getUser(req: Request, res: Response) {
