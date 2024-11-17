@@ -1,6 +1,5 @@
 export type ShoppingItem = {
   id: number;
-  shopping_basket_id?: number;
   brand_id?: number;
   name: string;
   color?: string;
@@ -10,6 +9,6 @@ export type ShoppingItem = {
   quantity: number;
   dimensions?: string;
   stock_status: string;
-  author?: string;
+  author: string;
   created_at: Date;
 };
