@@ -1,7 +1,7 @@
 import cookieParser from "cookie-parser";
 import express, { Request, Response } from "express";
 import session from "express-session";
-import passport from "passport";
+import passport from "./middleware/local-strategy";
 const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
