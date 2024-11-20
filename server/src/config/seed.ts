@@ -1,4 +1,4 @@
-import { faker } from "@faker-js/faker/.";
+const { faker } = require("@faker-js/faker");
 import mysql from "mysql2/promise";
 require("dotenv").config();
 const { DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME } = process.env;
@@ -160,7 +160,7 @@ const main = async () => {
       await seedShoppingItems(100);
 
       console.log("Seeding comments...");
-      await seedComments(200); // Par exemple, 200 commentaires
+      await seedComments(200);
 
       console.log("Seeding completed!");
     } catch (error) {
@@ -173,4 +173,4 @@ const main = async () => {
   seedDatabase();
 };
 
-main().catch((err) => console.error("Error:", err));
+// main().catch((err) => console.error("Error:", err));

@@ -32,7 +32,6 @@ const authRoutes = require("./routes/auth.routes");
 const itemsRoutes = require("./routes/items.routes");
 app.use("/api/auth", authRoutes);
 app.use("/api/items", itemsRoutes);
-app.use("/api", require("./routes/user.routes.js"));
 
 app.get("/", (req: Request, res: Response) => {
   console.log(req.session);
@@ -43,5 +42,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.listen(localhostPort, () =>
-  console.log(`Server running on port http://localhost:${localhostPort}`)
+  console.log(
+    `Server running on port http://localhost:${localhostPort}`
+  )
 );

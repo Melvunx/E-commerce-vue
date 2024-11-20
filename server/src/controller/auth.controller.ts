@@ -73,7 +73,7 @@ export const registerUser: RequestHandler<{}, {}, UserAccount> = (req, res) => {
     // Vérification de la conformité du mot de passe
     if (password.length < 6) {
       res.status(500).send({ error: "Password needs 6 characters minimum!" });
-      return; // Ajoutez un return pour arrêter l'exécution
+      return;
     }
 
     // Vérification des variables d'environnement
