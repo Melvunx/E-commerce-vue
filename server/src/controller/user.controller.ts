@@ -17,18 +17,16 @@ export function getUser(req: Request, res: Response) {
   });
 }
 
-export async function getProfileInfo(req: Request, res: Response) {
+export function getProfileInfo(req: Request, res: Response) {
   if (!GET_PROFILE)
     return res.status(500).send({ message: "Sql resquest is not defined" });
 
   database.query(GET_PROFILE, (err, result) => {
     if (err) {
       console.error(err);
-      res.status(500).send({ message: "Error fetching user profile" });
+      return res.status(500).send({ message: "Error fetching user profile" });
     }
     console.log(result);
     res.status(200).send({ result });
   });
 }
-
-

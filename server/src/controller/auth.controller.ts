@@ -93,12 +93,9 @@ export const registerUser: RequestHandler<{}, {}, UserAccount> = (req, res) => {
       (err, results: UserAccount["username"][]) => {
         if (err) {
           console.error(err);
-          res.status(500).send({ error: "Error checking username" });
-          return;
-        } else if (results.length > 0) {
-          res.status(500).send({ error: "Username already exists" });
-          return;
-        }
+          return res.status(500).send({ error: "Error checking username" });
+        } else if (results.length > 0)
+          return res.status(500).send({ error: "Username already exists" });
       }
     );
 
@@ -139,15 +136,15 @@ export const registerUser: RequestHandler<{}, {}, UserAccount> = (req, res) => {
         database.query(CREATE_USER_BASKET, [userId], (err) => {
           if (err) {
             console.error(err);
-            res.status(500).send({ error: "Error creating user basket" });
-            return;
+            return res
+              .status(500)
+              .send({ error: "Error creating user basket" });
           }
           console.log(`New user created : ${username}, ${firstname}`);
-          res.status(201).send({
+          return res.status(201).send({
             message: `User ${username} created`,
             details: { username, email, firstname, lastname, birth_date },
           });
-          return;
         });
       }
     );

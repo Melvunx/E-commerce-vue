@@ -22,7 +22,10 @@ router.post("/login", (req, res, next) => {
             .send({ message: "Login failed", error: loginErr });
         }
         console.log({ message: "Login successful", user });
-        return res.status(200).send({ message: "Login successful", user });
+        res.cookie("userCookie", user, { maxAge: 60000 * 60 });
+        return res
+          .status(200)
+          .send({ message: "Login successful", user, cookie: "Cookie send" });
       });
     }
   )(req, res, next);
@@ -30,9 +33,17 @@ router.post("/login", (req, res, next) => {
 
 router.get("/user", (req: Request, res: Response) => {
   if (req.isAuthenticated()) {
-    console.log(req.user);
-    const { email, username, id } = req.user;
-    res.status(200).send({ user: { id, email, username } });
+    const user: UserAccount = req.cookies.userCookie;
+
+    if (!user) {
+      res.status(401).send({ message: "Cookies not found" });
+      return;
+    }
+
+    console.log("User vérification...");
+    res.locals.user = user;
+    console.log(`User ${user.username} authenticated`);
+    res.status(200).send({ message: "User authenticated !", user: user });
   } else {
     console.log("Not authenticated");
     res.status(401).send({ message: "Not authenticated" });
@@ -41,12 +52,30 @@ router.get("/user", (req: Request, res: Response) => {
 
 router.post("/logout", (req, res) => {
   req.logout((err: string) => {
+    const user: UserAccount = req.cookies.userCookie;
     if (err) {
       console.error({ message: "Logout failed", error: err });
       return res.status(500).send({ message: "Logout failed", error: err });
+    } else if (!user) {
+      return res
+        .status(401)
+        .send({ message: "User not found or session expired" });
     }
-    console.log("User logged out", req.user);
-    res.status(200).send({ message: `User logged out succefully` });
+
+    req.session.destroy((sessionErr) => {
+      if (sessionErr) {
+        console.error({ message: "Session destroy failed", error: sessionErr });
+        return res
+          .status(500)
+          .send({ message: "Logout failed", error: sessionErr });
+      }
+      res.clearCookie("userCookie");
+      console.log("Cookie destroyed");
+
+      return res
+        .status(200)
+        .send({ message: `User ${user.username} logged out successfully` });
+    });
   });
 });
 
