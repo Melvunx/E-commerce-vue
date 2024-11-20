@@ -10,7 +10,7 @@ export function getUser(req: Request, res: Response) {
   database.query(GET_USER, (err, results) => {
     if (err) {
       console.error(err);
-      res.status(500).send({ message: "Error fetching user" });
+      res.status(500).send({ message: "Error fetching user", error: err });
     }
     console.log(results);
     res.status(200).send({ results });
@@ -23,8 +23,9 @@ export function getProfileInfo(req: Request, res: Response) {
 
   database.query(GET_PROFILE, (err, result) => {
     if (err) {
-      console.error(err);
-      return res.status(500).send({ message: "Error fetching user profile" });
+      return res
+        .status(500)
+        .send({ message: "Error fetching user profile", error: err });
     }
     console.log(result);
     res.status(200).send({ result });

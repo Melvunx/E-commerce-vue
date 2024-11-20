@@ -1,10 +1,13 @@
 import { RequestHandler } from "express";
 import database from "../config/database";
 import { UserAccount } from "../models/account.models";
-import { FavoriteItem } from "../models/favoriteItem.models";
 require("dotenv").config();
-const { GET_FAVORITE_ITEM, ADD_FAVORITE_ITEM, DELETE_FAVORITE_ITEM } =
-  process.env;
+const {
+  GET_FAVORITE_ITEM,
+  ADD_FAVORITE_ITEM,
+  FIND_FAVORITE_ITEM,
+  DELETE_FAVORITE_ITEM,
+} = process.env;
 
 export const getFavorite: RequestHandler = (req, res) => {
   const user: UserAccount = req.cookies.userCookie;
@@ -25,66 +28,81 @@ export const getFavorite: RequestHandler = (req, res) => {
   });
 };
 
-export const addFavorite: RequestHandler<FavoriteItem> = (req, res) => {
+export const addFavorite: RequestHandler = (req, res) => {
   const user: UserAccount = req.cookies.userCookie;
   const { item_id } = req.params;
 
   if (!user) {
-    res.send(401).send({ message: "User not found" });
+    res.status(401).send({ message: "User not found" });
     return;
   } else if (!item_id) {
-    res.status(401).send({ message: "Item's id not found" });
+    res.status(400).send({ message: "Item's id not found" });
     return;
   } else if (!ADD_FAVORITE_ITEM) {
-    res.status(404).send({ message: "Sql request not found" });
+    res.status(500).send({ message: "SQL query not found" });
     return;
   }
 
   database.query(ADD_FAVORITE_ITEM, [user.id, item_id], (error) => {
     if (error) {
       if (error.code === "ER_DUP_ENTRY") {
-        res.status(400).send("Item is already in favorites");
+        res
+          .status(400)
+          .send({ message: "Item is already in favorites", error: error.code });
+        return;
       } else {
-        console.error(error);
-        res.status(500).send("Error adding to favorites");
+        res.status(500).send({ message: "Error adding to favorites", error });
+        return;
       }
-      return;
     }
 
-    console.log(`User ${user.username} add to favorite the item ${item_id}`);
+    console.log(`User ${user.username} added to favorite item ${item_id}`);
     res.status(201).send({
-      message: `User ${user.username} add to favorite the item ${item_id}`,
+      message: `User ${user.username} added to favorite item ${item_id}`,
     });
   });
 };
 
-export const deleteFavorite: RequestHandler<FavoriteItem> = (req, res) => {
-  const user: UserAccount = req.cookies.userCookie;
-  const { item_id } = req.params;
+export const deleteFavorite: RequestHandler = (req, res) => {
+  const user: UserAccount = req.cookies.userCookie; // Utilisateur connecté
+  const { item_id } = req.params; // ID de l'élément à supprimer
 
   if (!user) {
-    res.send(401).send({ message: "User not found" });
+    res.status(401).send({ message: "User not authenticated" });
     return;
   } else if (!item_id) {
-    res.status(400).send({ message: "Item ID is required" });
+    res.status(400).send({ message: "Item's ID not provided" });
     return;
-  } else if (!DELETE_FAVORITE_ITEM) {
-    res.status(404).send({ message: "Sql request not found" });
+  } else if (!FIND_FAVORITE_ITEM || !DELETE_FAVORITE_ITEM) {
+    res.status(500).send({ error: "SQL query not found" });
     return;
   }
 
-  database.query(DELETE_FAVORITE_ITEM, [user.id, item_id], (err) => {
+  // Étape 1 : Vérifier si l'élément appartient à l'utilisateur
+  database.query(FIND_FAVORITE_ITEM, [user.id, item_id], (err, results) => {
     if (err) {
       console.error(err);
-      return res.status(500).send("Error removing from favorites");
+      res.status(500).send({ message: "Error checking favorite item" });
+      return;
     }
 
-    console.log(
-      `Favorite item with ID ${item_id} removed for user ${user.username}`
-    );
+    if (results.length === 0) {
+      res
+        .status(404)
+        .send({ message: `Favorite item not found for user ${user.username}` });
+      return;
+    }
 
-    res.status(200).send({
-      message: `Favorite item with ID ${item_id} removed for user ${user.username}`,
+    database.query(DELETE_FAVORITE_ITEM, [user.id, item_id], (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send({ message: "Error removing favorite item" });
+        return;
+      }
+
+      res.status(200).send({
+        message: `Favorite item with ID ${item_id} removed for user ${user.username}`,
+      });
     });
   });
 };

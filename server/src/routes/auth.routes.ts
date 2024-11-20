@@ -54,7 +54,6 @@ router.post("/logout", (req, res) => {
   req.logout((err: string) => {
     const user: UserAccount = req.cookies.userCookie;
     if (err) {
-      console.error({ message: "Logout failed", error: err });
       return res.status(500).send({ message: "Logout failed", error: err });
     } else if (!user) {
       return res
@@ -64,7 +63,6 @@ router.post("/logout", (req, res) => {
 
     req.session.destroy((sessionErr) => {
       if (sessionErr) {
-        console.error({ message: "Session destroy failed", error: sessionErr });
         return res
           .status(500)
           .send({ message: "Logout failed", error: sessionErr });

@@ -11,7 +11,9 @@ export const getItems: RequestHandler = (req, res) => {
   database.query(GET_ITEMS, (err, results) => {
     if (err) {
       console.error(err);
-      return res.status(500).send({ error: "Error fetching items" });
+      return res
+        .status(500)
+        .send({ message: "Error fetching items", error: err });
     }
 
     console.log({ items: results });

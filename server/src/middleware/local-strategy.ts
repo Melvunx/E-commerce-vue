@@ -21,9 +21,9 @@ passport.use(
       const user = results[0];
 
       // Vérification du mot de passe
-      // const isValidPassword = bcrypt.compareSync(password, user.password);
-      // if (!isValidPassword)
-      //   return done(null, false, { message: "Invalid password" });
+      const isValidPassword = bcrypt.compareSync(password, user.password);
+      if (!isValidPassword)
+        return done(null, false, { message: "Invalid password" });
 
       // Mettre à jour la dernière connexion
       database.query(UPDATE_LAST_LOGIN, [user.id], (updateError) => {
