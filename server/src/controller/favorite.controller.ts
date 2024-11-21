@@ -17,14 +17,14 @@ export const getFavorite: RequestHandler = (req, res) => {
     return;
   }
 
-  database.query(GET_FAVORITE_ITEM, [user.email], (err, results) => {
+  database.query(GET_FAVORITE_ITEM, [user.id], (err, results) => {
     if (err)
       return res
         .status(500)
         .send({ message: "Error to fetching favorite items", error: err });
 
     console.log({ favorites: results });
-    res.status(200).send({ favorites: results });
+    res.status(200).json({ userFavorites: results });
   });
 };
 
@@ -57,7 +57,7 @@ export const addFavorite: RequestHandler = (req, res) => {
     }
 
     console.log(`User ${user.username} added to favorite item ${item_id}`);
-    res.status(201).send({
+    res.status(201).json({
       message: `User ${user.username} added to favorite item ${item_id}`,
     });
   });
@@ -82,7 +82,9 @@ export const deleteFavorite: RequestHandler = (req, res) => {
   database.query(FIND_FAVORITE_ITEM, [user.id, item_id], (err, results) => {
     if (err) {
       console.error(err);
-      res.status(500).send({ message: "Error checking favorite item" });
+      res
+        .status(500)
+        .send({ message: "Error checking favorite item", error: err });
       return;
     }
 

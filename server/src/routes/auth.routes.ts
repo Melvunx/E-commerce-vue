@@ -21,11 +21,15 @@ router.post("/login", (req, res, next) => {
             .status(500)
             .send({ message: "Login failed", error: loginErr });
         }
-        console.log({ message: "Login successful", user });
+        console.log(`User ${user.username} logged in !`);
         res.cookie("userCookie", user, { maxAge: 60000 * 60 });
         return res
           .status(200)
-          .send({ message: "Login successful", user, cookie: "Cookie send" });
+          .json({
+            message: "Login successful",
+            user,
+            cookie: "Cookie will despawn in 1 hour",
+          });
       });
     }
   )(req, res, next);
@@ -43,7 +47,7 @@ router.get("/user", (req: Request, res: Response) => {
     console.log("User vérification...");
     res.locals.user = user;
     console.log(`User ${user.username} authenticated`);
-    res.status(200).send({ message: "User authenticated !", user: user });
+    res.status(200).send({ message: `User ${user.username} authenticated` });
   } else {
     console.log("Not authenticated");
     res.status(401).send({ message: "Not authenticated" });
@@ -68,7 +72,7 @@ router.post("/logout", (req, res) => {
           .send({ message: "Logout failed", error: sessionErr });
       }
       res.clearCookie("userCookie");
-      console.log("Cookie destroyed");
+      console.log(`User ${user.username} logged out`);
 
       return res
         .status(200)
